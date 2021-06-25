@@ -1,0 +1,17 @@
+body {
+    text-align: center;
+}
+
+p {
+    display: inline-block;
+}
+
+#scoreboard {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#player-score, #computer-score {
+    padding: 10px;
+}

@@ -1,37 +1,27 @@
-// Start the game
-game();
+let playerScore = 0;
+let computerScore = 0;
+let roundResult = document.querySelector("#round-result");
 
-// Carries out a game of five rounds
-function game() {
-    for (let i = 0; i < 5; i++) {
-        let playerSelection = promptPlayer();
-        let computerSelection = computerPlay();
-        console.log(playRound(playerSelection, computerSelection));
-    }
-}
+// Reset player's selection
+let playerSelection = "";
 
-// Receives and returns player's selection
-function promptPlayer() {
-    let playerSelection = prompt("Rock, Paper, or Scissors?");
+// Player chose rock
+document.querySelector("#rock").addEventListener("click", () => {
+    playerSelection = "rock";
+    playRound(playerSelection, computerPlay());
+});
 
-    // If user input is null or empty, prompt the user again
-    if (playerSelection == null || playerSelection === "") {
-        promptPlayer();
-    }
+// Player chose paper
+document.querySelector("#paper").addEventListener("click", () => {
+    playerSelection = "paper";
+    playRound(playerSelection, computerPlay());
+});
 
-    // Convert the string to lowercase for easy comparisons
-    playerSelection = playerSelection.toLowerCase()
-
-    /*
-     Ensure that the user entered a valid selection for the game. 
-     Otherwise, prompt them again
-     */
-    if (!(playerSelection === "rock" || playerSelection === "paper" || playerSelection == "scissors")) {
-        promptPlayer();
-    }
-
-    return playerSelection;
-}
+// Player chose scissors
+document.querySelector("#scissors").addEventListener("click", () => {
+    playerSelection = "scissors";
+    playRound(playerSelection, computerPlay());
+});
 
 // Returns a random selection to play against the player
 function computerPlay() {
@@ -48,22 +38,61 @@ function computerPlay() {
 
 // Plays a single round of the game
 function playRound(playerSelection, computerSelection) {
-    // The player wins
-    if (playerSelection === "rock" && computerSelection === "scissors" ||
-        playerSelection === "scissors" && computerSelection === "paper" ||
-        playerSelection === "paper" && computerSelection === "rock") {
-        return `You win! ${playerSelection} beats ${computerSelection}!`;
-    }
+    let playerWins = false;
+    let computerWins = false;
 
-    // The computer wins
-    if (computerSelection === "rock" && playerSelection === "scissors" ||
-        computerSelection === "scissors" && playerSelection === "paper" ||
-        computerSelection === "paper" && playerSelection === "rock") {
-        return `You lose! ${computerSelection} beats ${playerSelection}!`;
-    }
+    // Check if the target score has been reached
+    if (playerScore === 5) {
+        roundResult.textContent = "Player wins the game!";
+        document.getElementById("play-buttons").style.display = "none";
+    } else if (computerScore === 5) {
+        roundResult.textContent = "Computer wins the game!";
+        document.getElementById("play-buttons").style.display = "none";
+    } else { // Continue the game if the target score has not been reached
+        // The player wins
+        if (playerSelection === "rock" && computerSelection === "scissors" ||
+            playerSelection === "scissors" && computerSelection === "paper" ||
+            playerSelection === "paper" && computerSelection === "rock") {
+            roundResult.textContent = `You win! ${formatSelection(playerSelection)} beats ${formatSelection(computerSelection)}!`;
 
-    // It's a draw
-    if (playerSelection === computerSelection) {
-        return `It's a draw! You both chose ${playerSelection}!`;
+            playerWins = true;
+            updateScore(playerWins, computerWins);
+        }
+
+        // The computer wins
+        if (computerSelection === "rock" && playerSelection === "scissors" ||
+            computerSelection === "scissors" && playerSelection === "paper" ||
+            computerSelection === "paper" && playerSelection === "rock") {
+            roundResult.textContent = `You lose! ${formatSelection(computerSelection)} beats ${formatSelection(playerSelection)}!`;
+
+            computerWins = true;
+            updateScore(playerWins, computerWins);
+        }
+
+        // It's a draw
+        if (playerSelection === computerSelection) {
+            roundResult.textContent = `It's a draw! You both chose ${formatSelection(playerSelection)}!`;
+
+            updateScore(playerWins, computerWins);
+        }
     }
+}
+
+// Updates the score
+function updateScore(playerWins, computerWins) {
+    if (playerWins === true && computerWins === false) {
+        playerScore += 1;
+        document.querySelector("#player-score-number").textContent = playerScore;
+    } else if (computerWins === true && playerWins === false) {
+        computerScore += 1;
+        document.querySelector("#computer-score-number").textContent = computerScore;
+    } else {
+        // It was a draw, so do nothing
+        return;
+    }
+}
+
+// Capitalizes the first letter of the player's/computer's selection
+function formatSelection(selection) {
+    return selection.charAt(0).toUpperCase() + selection.slice(1);
 }
